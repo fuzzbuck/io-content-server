@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+project.ext.mainClassName = "content.main"
+sourceCompatibility = targetCompatibility = 14
+version = '1.0'
+
+sourceSets.main.java.srcDirs = ["src/"]
+allprojects{
+    repositories{
+        mavenLocal()
+        mavenCentral()
+        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven{ url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven{ url 'https://jitpack.io' }
+        jcenter()
+    }
+}
+
+ext{
+    javaMainClass = "content.main"
+    mindustryVersion = 'v125'
+}
+
+
+
+task dist(type: Jar){
+    from files(sourceSets.main.output.classesDirs)
+    from files(sourceSets.main.output.resourcesDir)
+    from {configurations.runtimeClasspath.collect{ it.isDirectory() || !it.name.endsWithAny(".zip", ".jar") ? it : zipTree(it) }}
+
+    archiveFileName = "content-server.jar"
+
+    manifest{
+        attributes (
+                'Class-Path': sourceSets.main.runtimeClasspath,
+                'Main-Class': javaMainClass,
+
+        )
+    }
+}
+
+task run(type: JavaExec) {
+    group = "Execution"
+    description = "Run the main class with JavaExecTask"
+    classpath = sourceSets.main.runtimeClasspath
+    main = javaMainClass
+}
+
+dependencies{
+    compile "io.vacco.java-express:java-express:0.2.1"
+    compile "org.jsoup:jsoup:1.7.2"
+    compile "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+    compile "com.github.Anuken.Mindustry:core:$mindustryVersion"
+}

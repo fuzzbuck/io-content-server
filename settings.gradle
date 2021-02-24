@@ -1,0 +1,3 @@
+rootProject.name = 'io-content-server'
+include 'content'
+
