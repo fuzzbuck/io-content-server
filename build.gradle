@@ -1,25 +1,22 @@
 apply plugin: 'java'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-project.ext.mainClassName = "content.main"
-sourceCompatibility = targetCompatibility = 14
 version = '1.0'
 
 sourceSets.main.java.srcDirs = ["src/"]
 allprojects{
     repositories{
-        mavenLocal()
+        jcenter()
         mavenCentral()
         maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven{ url "https://oss.sonatype.org/content/repositories/releases/" }
         maven{ url 'https://jitpack.io' }
-        jcenter()
     }
 }
 
 ext{
     javaMainClass = "content.main"
-    mindustryVersion = 'v125'
+    mindustryVersion = 'v126'
 }
 
 
@@ -48,8 +45,8 @@ task run(type: JavaExec) {
 }
 
 dependencies{
-    compile "io.vacco.java-express:java-express:0.2.1"
-    compile "org.jsoup:jsoup:1.7.2"
-    compile "com.github.Anuken.Arc:arc-core:$mindustryVersion"
-    compile "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    implementation "io.vacco.java-express:java-express:0.2.1"
+    implementation "org.jsoup:jsoup:1.7.2"
+    implementation "com.github.Anuken.Arc:arc-core:$mindustryVersion"
+    implementation "com.github.Anuken.Mindustry:core:$mindustryVersion"
 }
