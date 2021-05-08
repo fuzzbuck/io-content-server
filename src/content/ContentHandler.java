@@ -18,7 +18,6 @@ import mindustry.core.*;
 import mindustry.ctype.*;
 import mindustry.entities.units.*;
 import mindustry.game.*;
-import mindustry.gen.Call;
 import mindustry.gen.Groups;
 import mindustry.io.*;
 import mindustry.world.*;
@@ -29,6 +28,8 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.zip.*;
 
 import static mindustry.Vars.*;
@@ -60,7 +61,7 @@ public class ContentHandler{
         TextureAtlasData data = new TextureAtlasData(new Fi(assets + "sprites/sprites.atlas"), new Fi(assets + "sprites"), false);
         Core.atlas = new TextureAtlas();
 
-        ObjectMap<Page, BufferedImage> images = new ObjectMap<>();
+        ObjectMap<AtlasPage, BufferedImage> images = new ObjectMap<>();
         ObjectMap<String, BufferedImage> regions = new ObjectMap<>();
 
         data.getPages().each(page -> {
@@ -93,7 +94,7 @@ public class ContentHandler{
         Lines.useLegacyLine = true;
         Core.atlas.setErrorRegion("error");
         Draw.scl = 1f / 4f;
-        Groups.build.forEach(b -> {
+        if (Groups.build != null) Groups.build.forEach(b -> {
 
         });
 
@@ -180,6 +181,20 @@ public class ContentHandler{
 
     public Schematic parseSchematic(String text) throws Exception{
         return Schematics.read(new ByteArrayInputStream(Base64Coder.decode(text)));
+    }
+
+    public Schematic parseSchematicURL(String text) throws Exception{
+        return Schematics.read(download(text));
+    }
+
+    public InputStream download(String url){
+        try{
+            HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
+            return connection.getInputStream();
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     public BufferedImage previewSchematic(Schematic schem) throws Exception{
@@ -316,7 +331,7 @@ public class ContentHandler{
 
         @Override
         public TextureDataType getType(){
-            return TextureDataType.Custom;
+            return TextureDataType.custom;
         }
 
         @Override
